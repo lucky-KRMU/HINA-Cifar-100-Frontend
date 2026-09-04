@@ -17,6 +17,7 @@ import {
   Eye
 } from 'lucide-react'
 import confetti from 'canvas-confetti'
+import hinaLogo from './assets/hina-logo.jpg'
 import './App.css'
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000'
@@ -250,7 +251,7 @@ export default function App() {
       <header className="app-header">
         <div className="brand-section">
           <div className="brand-logo-wrap">
-            <Layers size={28} color="#00f0ff" />
+            <img src={hinaLogo} alt="HINA Logo" className="brand-logo-img" />
           </div>
           <div className="brand-titles">
             <h1>
