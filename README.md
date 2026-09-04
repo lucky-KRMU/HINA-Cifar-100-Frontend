@@ -1,5 +1,7 @@
 # HINA Cifar 100 — Frontend Web Application
 
+> **Live Demo**: [https://lucky-krmu.github.io/HINA-Cifar-100-Frontend/](https://lucky-krmu.github.io/HINA-Cifar-100-Frontend/)
+
 HighRes Image Network Architecture (**HINA**) interactive web dashboard for real-time CIFAR-100 image classification. Built with **React 19**, **Vite**, and styled with a custom aesthetic featuring neon green, sky blue, and neon electric blue gradients.
 
 ---
