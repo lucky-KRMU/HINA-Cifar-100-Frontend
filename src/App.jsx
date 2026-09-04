@@ -9,12 +9,7 @@ import {
   AlertCircle,
   BookOpen,
   X,
-  Search,
-  Sparkles,
-  Maximize2,
-  RefreshCw,
-  Cpu,
-  Eye
+  Maximize2
 } from 'lucide-react'
 import confetti from 'canvas-confetti'
 import hinaLogo from './assets/hina-logo.jpg'
@@ -32,34 +27,22 @@ export default function App() {
 
   // Data & Prediction States
   const [backendHealth, setBackendHealth] = useState(null)
-  const [samples, setSamples] = useState([])
   const [catalog, setCatalog] = useState({ fine_classes: [], superclasses: [] })
   
   const [currentImagePreview, setCurrentImagePreview] = useState(null)
-  const [selectedSampleId, setSelectedSampleId] = useState(null)
-  const [selectedFile, setSelectedFile] = useState(null)
-
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
 
   // Options
-  const [topK, setTopK] = useState(5)
-  const [preprocessMode, setPreprocessMode] = useState('resnet')
+  const [topK] = useState(5)
+  const [preprocessMode] = useState('resnet')
   const [pixelatedView, setPixelatedView] = useState(false)
 
   // Webcam Refs & State
   const videoRef = useRef(null)
-  const [webcamActive, setWebcamActive] = useState(false)
   const [cameraStream, setCameraStream] = useState(null)
   const fileInputRef = useRef(null)
-
-  // Fetch initial system data
-  useEffect(() => {
-    checkHealth()
-    fetchSamples()
-    fetchClasses()
-  }, [])
 
   const checkHealth = async () => {
     try {
@@ -75,22 +58,6 @@ export default function App() {
     }
   }
 
-  const fetchSamples = async () => {
-    try {
-      const res = await fetch(`${API_BASE}/api/samples`)
-      if (res.ok) {
-        const data = await res.json()
-        const enriched = (data.samples || []).map(s => ({
-          ...s,
-          url: s.url.startsWith('http') ? s.url : `${API_BASE}${s.url}`
-        }))
-        setSamples(enriched)
-      }
-    } catch (err) {
-      console.warn('Failed to load sample presets', err)
-    }
-  }
-
   const fetchClasses = async () => {
     try {
       const res = await fetch(`${API_BASE}/api/classes`)
@@ -102,6 +69,12 @@ export default function App() {
       console.warn('Failed to load class catalog', err)
     }
   }
+
+  // Fetch initial system data
+  useEffect(() => {
+    checkHealth()
+    fetchClasses()
+  }, [])
 
   // Handle Drag & Drop
   const handleDragOver = (e) => {
@@ -127,7 +100,6 @@ export default function App() {
       return
     }
     setError(null)
-    setSelectedSampleId(null)
     setSelectedFile(file)
 
     const reader = new FileReader()
@@ -136,15 +108,6 @@ export default function App() {
       runPrediction({ file, mode: preprocessMode, k: topK })
     }
     reader.readAsDataURL(file)
-  }
-
-  // Handle Preset Sample Selection
-  const handleSelectSample = (sample) => {
-    setError(null)
-    setSelectedFile(null)
-    setSelectedSampleId(sample.id)
-    setCurrentImagePreview(sample.url)
-    runPrediction({ sampleId: sample.id, mode: preprocessMode, k: topK })
   }
 
   // Webcam Management
@@ -192,15 +155,13 @@ export default function App() {
   }
 
   // Trigger Prediction Request
-  const runPrediction = async ({ file, sampleId, mode, k }) => {
+  const runPrediction = async ({ file, mode, k }) => {
     setLoading(true)
     setError(null)
     try {
       const formData = new FormData()
       if (file) {
         formData.append('file', file)
-      } else if (sampleId) {
-        formData.append('sample_id', sampleId)
       }
       formData.append('top_k', k || topK)
       formData.append('preprocess_mode', mode || preprocessMode)
@@ -400,35 +361,6 @@ export default function App() {
             </div>
           )}
 
-          {/* Quick Preset Samples */}
-          <div className="preset-section">
-            <div className="preset-title-row">
-              <span>Quick Test Samples (CIFAR-100 Presets)</span>
-              <Sparkles size={14} color="#00f0ff" />
-            </div>
-
-            <div className="preset-chips-grid">
-              {samples.map((sample) => (
-                <button
-                  key={sample.id}
-                  className={`preset-chip ${
-                    selectedSampleId === sample.id ? 'active' : ''
-                  }`}
-                  onClick={() => handleSelectSample(sample)}
-                >
-                  <img
-                    src={sample.url}
-                    alt={sample.name}
-                    className="preset-thumb"
-                  />
-                  <div className="preset-meta">
-                    <span>{sample.name}</span>
-                    <span>{sample.superclass}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
 
           {/* Resolution Inspector (Original vs 32x32 CIFAR Native) */}
           {(currentImagePreview || result?.previews) && (
@@ -526,7 +458,7 @@ export default function App() {
                 Awaiting Image Input
               </h3>
               <p style={{ maxWidth: '340px', fontSize: '0.86rem' }}>
-                Upload an image or select a preset sample above to execute real-time inference through HINA ResNet-50.
+                Upload an image or capture a photo with your webcam to execute real-time inference through HINA ResNet-50.
               </p>
             </div>
           )}
