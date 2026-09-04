@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Overlock+SC&family=Sansation:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
+
 :root {
   --bg-primary: #050b14;
   --bg-card: rgba(10, 24, 45, 0.72);
@@ -28,12 +30,18 @@
   --border-glow: rgba(0, 240, 255, 0.35);
 
   /* Fonts */
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: 'Sansation', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: 'Overlock SC', cursive, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
   /* Shadows */
   --shadow-neon: 0 0 25px rgba(0, 240, 255, 0.25), 0 0 10px rgba(16, 185, 129, 0.18);
   --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(56, 189, 248, 0.12);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  letter-spacing: 0.04em;
 }
 
 * {
