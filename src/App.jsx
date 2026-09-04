@@ -19,6 +19,8 @@ import {
 import confetti from 'canvas-confetti'
 import './App.css'
 
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8000'
+
 export default function App() {
   // Navigation & UI States
   const [activeTab, setActiveTab] = useState('upload') // 'upload' | 'webcam'
@@ -60,7 +62,7 @@ export default function App() {
 
   const checkHealth = async () => {
     try {
-      const res = await fetch('/api/health')
+      const res = await fetch(`${API_BASE}/api/health`)
       if (res.ok) {
         const data = await res.json()
         setBackendHealth(data)
@@ -74,10 +76,14 @@ export default function App() {
 
   const fetchSamples = async () => {
     try {
-      const res = await fetch('/api/samples')
+      const res = await fetch(`${API_BASE}/api/samples`)
       if (res.ok) {
         const data = await res.json()
-        setSamples(data.samples || [])
+        const enriched = (data.samples || []).map(s => ({
+          ...s,
+          url: s.url.startsWith('http') ? s.url : `${API_BASE}${s.url}`
+        }))
+        setSamples(enriched)
       }
     } catch (err) {
       console.warn('Failed to load sample presets', err)
@@ -86,7 +92,7 @@ export default function App() {
 
   const fetchClasses = async () => {
     try {
-      const res = await fetch('/api/classes')
+      const res = await fetch(`${API_BASE}/api/classes`)
       if (res.ok) {
         const data = await res.json()
         setCatalog(data)
@@ -198,7 +204,7 @@ export default function App() {
       formData.append('top_k', k || topK)
       formData.append('preprocess_mode', mode || preprocessMode)
 
-      const res = await fetch('/api/predict', {
+      const res = await fetch(`${API_BASE}/api/predict`, {
         method: 'POST',
         body: formData,
       })
